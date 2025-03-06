@@ -1,16 +1,18 @@
 ﻿using API.Events;
 using API.Models;
+using Marten;
 using Marten.Events;
 using Marten.Events.Aggregation;
 using Marten.Events.Projections;
+using Marten.Services;
 
 namespace API.Projections;
 
 public class HouseProjection : SingleStreamProjection<House>
 {
-    public House Create(IEvent<NewHouseEnroled> @event)
+    public House Create(IEvent<NewHouseEnrolled> @event)
     {
-        return new House(@event.Id, @event.Data.HouseName , @event.Data.Address, @event.Data.NumberOfRooms, 0);
+        return new House(@event.Id, @event.Data.HouseName , @event.Data.Address, @event.Data.NumberOfRooms, null);
     }
 
     public House Apply(HouseRenamed @event, House house) => 
@@ -36,10 +38,20 @@ public class HouseProjection : SingleStreamProjection<House>
         {
             NumberOfRooms = house.NumberOfRooms + @event.Number,
         };
-    
-    public House Apply(UserRate @event, House house) => 
-        house with
+
+    public async Task<House> Apply(UserRate @event, House house, IQuerySession session)
+    {
+        var events = await session.Events.FetchStreamAsync(house.Id);
+
+        var stars = events
+            .Where(e => e.EventType == typeof(UserRate))
+            .Select(e => Convert.ToDecimal(((UserRate)e.Data).Rate))
+            .Union([Convert.ToDecimal(@event.Rate)]);
+        
+        return house with
         {
-            Stars = @event.Rate,
+            Stars = stars.Average(),
         };
+    }
+   
 }

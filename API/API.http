@@ -1,10 +1,16 @@
 @HostAddress = http://localhost:5034
 
+# Get all houses
 GET {{HostAddress}}/houses/
 Accept: application/json
 
 ###
+# Get one houses
+GET {{HostAddress}}/houses/01956caf-381a-4ca3-8d36-5be04ecbf258
+Accept: application/json
 
+###
+# Create a house
 POST {{HostAddress}}/houses
 Accept: application/json
 Content-Type: application/json
@@ -16,8 +22,8 @@ Content-Type: application/json
 }
 
 ###
-
-PUT {{HostAddress}}/houses/01956bfc-920b-49e0-89e8-57e5d8c105ea
+# Get a specific house
+PUT {{HostAddress}}/houses/
 Accept: application/json
 Content-Type: application/json
 

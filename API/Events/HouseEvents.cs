@@ -1,6 +1,6 @@
 namespace API.Events;
 
-public sealed record NewHouseEnroled(string HouseName, string Address, int NumberOfRooms);
+public sealed record NewHouseEnrolled(string HouseName, string Address, int NumberOfRooms);
 public sealed record HouseRenamed(string Name);
 public sealed record AddressChanged(string Address);
 public sealed record RoomsClosed(int Number);

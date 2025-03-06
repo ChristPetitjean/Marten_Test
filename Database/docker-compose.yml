@@ -1,5 +1,5 @@
 # Use postgres/Sup3rPa77W0rd user/password credentials on postgres database
-# Use adminer to manage the database on http://localhost:8080
+# Use adminer to manage the database on db
 # Use /custom/mount as the database data directory
 version: '3.9'
 

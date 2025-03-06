@@ -21,6 +21,8 @@ builder.Services.AddMarten(options =>
     
     // Register all our projections
     options.Projections.Add<HouseProjection>(ProjectionLifecycle.Inline);
+    
+    options.Events.UseOptimizedProjectionRebuilds = true; 
 
     // If we're running in development mode, let Marten just take care
     // of all necessary schema building and patching behind the scenes
@@ -28,7 +30,7 @@ builder.Services.AddMarten(options =>
     {
         options.AutoCreateSchemaObjects = AutoCreate.All;
     }
-});
+}).UseLightweightSessions();
 
 builder.Services.AddFastEndpoints()
 .AddSwaggerDocument();
