@@ -1,0 +1,26 @@
+@HostAddress = http://localhost:5034
+
+GET {{HostAddress}}/houses/
+Accept: application/json
+
+###
+
+POST {{HostAddress}}/houses
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Test",
+  "address": "My super address",
+  "numberOfRooms": 12
+}
+
+###
+
+PUT {{HostAddress}}/houses/01956bfc-920b-49e0-89e8-57e5d8c105ea
+Accept: application/json
+Content-Type: application/json
+
+{
+  "address": "My v2 new hyper cool address"
+}
