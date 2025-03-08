@@ -14,8 +14,10 @@ public class GetHouseEndpoint(IDocumentSession session) : Endpoint<GetHouseReque
 
     public override void Configure()
     {
-        this.Get("/houses/{id}");
+        this.Get("/houses/{id:guid}");
         this.AllowAnonymous();
+        
+        this.Description(x => x.ClearDefaultAccepts());
     }
 
     public override async Task HandleAsync(GetHouseRequest req, CancellationToken ct)
@@ -28,6 +30,6 @@ public class GetHouseEndpoint(IDocumentSession session) : Endpoint<GetHouseReque
             return;
         }
 
-        await this.SendOkAsync(new (house.Id, house.Name, house.Address, house.NumberOfRooms, house.Stars), ct);
+        await this.SendOkAsync(new (house.Id, house.Name, house.Address, house.NumberOfRooms, house.Rate), ct);
     }
 }

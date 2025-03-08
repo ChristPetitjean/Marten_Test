@@ -2,6 +2,7 @@ using API.Projections;
 using Marten;
 using Weasel.Core;
 using FastEndpoints;
+using FastEndpoints.Swagger;
 using Marten.Events.Projections;
 using Scalar.AspNetCore;
 
@@ -32,8 +33,9 @@ builder.Services.AddMarten(options =>
     }
 }).UseLightweightSessions();
 
-builder.Services.AddFastEndpoints()
-.AddSwaggerDocument();
+builder.Services
+    .AddFastEndpoints()
+    .SwaggerDocument();
 
 var app = builder.Build();
 
@@ -46,6 +48,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseFastEndpoints();
+app.UseFastEndpoints()
+    .UseSwaggerGen();
 
 app.Run();

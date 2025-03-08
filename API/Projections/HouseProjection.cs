@@ -12,7 +12,7 @@ public class HouseProjection : SingleStreamProjection<House>
 {
     public House Create(IEvent<NewHouseEnrolled> @event)
     {
-        return new House(@event.Id, @event.Data.HouseName , @event.Data.Address, @event.Data.NumberOfRooms, null);
+        return new House(@event.Id, @event.Data.HouseName , @event.Data.Address, @event.Data.NumberOfRooms, null, 0);
     }
 
     public House Apply(HouseRenamed @event, House house) => 
@@ -39,18 +39,13 @@ public class HouseProjection : SingleStreamProjection<House>
             NumberOfRooms = house.NumberOfRooms + @event.Number,
         };
 
-    public async Task<House> Apply(UserRate @event, House house, IQuerySession session)
+    public House Apply(UserRate @event, House house)
     {
-        var events = await session.Events.FetchStreamAsync(house.Id);
-
-        var stars = events
-            .Where(e => e.EventType == typeof(UserRate))
-            .Select(e => Convert.ToDecimal(((UserRate)e.Data).Rate))
-            .Union([Convert.ToDecimal(@event.Rate)]);
-        
+        var average = ((house.Rate ?? 0) * house.NumberOfRates + @event.Rate) / (house.NumberOfRates + 1.0m);
         return house with
         {
-            Stars = stars.Average(),
+            Rate = average,
+            NumberOfRates = house.NumberOfRates + 1
         };
     }
    

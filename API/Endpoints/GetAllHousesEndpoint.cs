@@ -22,6 +22,6 @@ public class GetAllHousesEndpoint(IDocumentSession session)  : EndpointWithoutRe
     {
         var houses = await this._session.Query<House>().ToListAsync(ct);
 
-        await this.SendOkAsync(new(houses.Select(house => new GetAllHousesResponseHouse(house.Id, house.Name, house.Address, house.NumberOfRooms, house.Stars))), ct);
+        await this.SendOkAsync(new(houses.Select(house => new GetAllHousesResponseHouse(house.Id, house.Name, house.Address, house.NumberOfRooms, house.Rate))), ct);
     }
 }

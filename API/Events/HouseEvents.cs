@@ -5,4 +5,4 @@ public sealed record HouseRenamed(string Name);
 public sealed record AddressChanged(string Address);
 public sealed record RoomsClosed(int Number);
 public sealed record RoomsOpened(int Number);
-public sealed record UserRate(int Rate);
+public sealed record UserRate(decimal Rate);
