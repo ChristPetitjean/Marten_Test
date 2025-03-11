@@ -13,17 +13,17 @@ public class RenameEndpoint(IDocumentSession session) : Endpoint<RenameEndpointR
 
     public override void Configure()
     {
-        this.Put("/houses/{id}/rename");
-        this.AllowAnonymous();
+        Put("/houses/{id}/rename");
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(RenameEndpointRequest req, CancellationToken ct)
     {
-        this._session.Events.Append(req.Id, new HouseRenamed(req.Name));
-        await this._session.SaveChangesAsync(ct);
+        _session.Events.Append(req.Id, new HouseRenamed(req.Name));
+        await _session.SaveChangesAsync(ct);
 
-        var house = await this._session.LoadAsync<House>(req.Id, ct);
+        var house = await _session.LoadAsync<House>(req.Id, ct);
 
-        await this.SendOkAsync(house, ct);
+        await SendOkAsync(house, ct);
     }
 }

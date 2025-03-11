@@ -13,25 +13,25 @@ public class RoomsEndpoint(IDocumentSession session) : Endpoint<RoomsRequest>
 
     public override void Configure()
     {
-        this.Put("/houses/{id}/rooms");
-        this.AllowAnonymous();
+        Put("/houses/{id}/rooms");
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(RoomsRequest req, CancellationToken ct)
     {
         if (req.Added > 0)
         {
-            this._session.Events.Append(req.Id, new RoomsOpened(req.Added));
+            _session.Events.Append(req.Id, new RoomsOpened(req.Added));
         }
         if (req.Removed > 0)
         {
-            this._session.Events.Append(req.Id, new RoomsClosed(req.Removed));
+            _session.Events.Append(req.Id, new RoomsClosed(req.Removed));
         }
-       
-        await this._session.SaveChangesAsync(ct);
 
-        var house = await this._session.LoadAsync<House>(req.Id, ct);
+        await _session.SaveChangesAsync(ct);
 
-        await this.SendOkAsync(house, ct);
+        var house = await _session.LoadAsync<House>(req.Id, ct);
+
+        await SendOkAsync(house, ct);
     }
 }

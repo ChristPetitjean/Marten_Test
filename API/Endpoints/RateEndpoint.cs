@@ -13,17 +13,17 @@ public class RateEndpoint(IDocumentSession session) : Endpoint<RateRequest>
 
     public override void Configure()
     {
-        this.Post("/houses/{houseId}/rate");
-        this.AllowAnonymous();
+        Post("/houses/{houseId}/rate");
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(RateRequest req, CancellationToken ct)
     {
-        this._session.Events.Append(req.Id, new UserRate(req.Stars));
-        await this._session.SaveChangesAsync(ct);
+        _session.Events.Append(req.Id, new UserRate(req.Stars));
+        await _session.SaveChangesAsync(ct);
 
-        var house = await this._session.LoadAsync<House>(req.Id, ct);
+        var house = await _session.LoadAsync<House>(req.Id, ct);
 
-        await this.SendOkAsync(house, ct);
+        await SendOkAsync(house, ct);
     }
 }

@@ -13,17 +13,17 @@ public class ChangeAddressEndpoint(IDocumentSession session) : Endpoint<ChangeAd
 
     public override void Configure()
     {
-        this.Put("/houses/{id}/changeAddress");
-        this.AllowAnonymous();
+        Put("/houses/{id}/changeAddress");
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(ChangeAddressRequest req, CancellationToken ct)
     {
-        this._session.Events.Append(req.Id, new AddressChanged(req.Address));
-        await this._session.SaveChangesAsync(ct);
+        _session.Events.Append(req.Id, new AddressChanged(req.Address));
+        await _session.SaveChangesAsync(ct);
 
-        var house = await this._session.LoadAsync<House>(req.Id, ct);
+        var house = await _session.LoadAsync<House>(req.Id, ct);
 
-        await this.SendOkAsync(house, ct);
+        await SendOkAsync(house, ct);
     }
 }

@@ -14,22 +14,24 @@ public class GetHouseEndpoint(IDocumentSession session) : Endpoint<GetHouseReque
 
     public override void Configure()
     {
-        this.Get("/houses/{id:guid}");
-        this.AllowAnonymous();
-        
-        this.Description(x => x.ClearDefaultAccepts());
+        Get("/houses/{@id:guid}", x => new GetHouseRequest(x.Id));
+        AllowAnonymous();
+
+        // This is a way to clear the default accepts, which is application/json
+        // It prevent the endpoint from accetpting a body with a DTO to overrides routes parameters
+        Description(x => x.ClearDefaultAccepts());
     }
 
     public override async Task HandleAsync(GetHouseRequest req, CancellationToken ct)
     {
-        var house = await this._session.LoadAsync<House>(req.Id, ct);
+        var house = await _session.LoadAsync<House>(req.Id, ct);
 
         if (house == null)
         {
-            await this.SendNotFoundAsync(ct);
+            await SendNotFoundAsync(ct);
             return;
         }
 
-        await this.SendOkAsync(new (house.Id, house.Name, house.Address, house.NumberOfRooms, house.Rate), ct);
+        await SendOkAsync(new(house.Id, house.Name, house.Address, house.NumberOfRooms, house.Rate), ct);
     }
 }

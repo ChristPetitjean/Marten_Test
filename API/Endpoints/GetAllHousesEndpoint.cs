@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using API.Models;
 using FastEndpoints;
 using Marten;
@@ -6,22 +7,31 @@ namespace API.Endpoints;
 
 public record GetAllHousesResponseHouse(Guid Id, string Name, string Address, int NumberOfRooms, decimal? Stars);
 
-public record GetAllHousesResponse(IEnumerable<GetAllHousesResponseHouse> Houses);
-
-public class GetAllHousesEndpoint(IDocumentSession session)  : EndpointWithoutRequest<GetAllHousesResponse>
+public class GetAllHousesEndpoint(IDocumentSession session) : EndpointWithoutRequest
 {
     private readonly IDocumentSession _session = session;
 
     public override void Configure()
     {
-        this.Get("/houses");
-        this.AllowAnonymous();
+        Get("/houses");
+        AllowAnonymous();
+
+        Description(b => b
+        .Produces<IEnumerable<GetAllHousesResponseHouse>>());
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var houses = await this._session.Query<House>().ToListAsync(ct);
+        await SendEventStreamAsync("houses-received", GetDataStream(ct), ct);
+    }
 
-        await this.SendOkAsync(new(houses.Select(house => new GetAllHousesResponseHouse(house.Id, house.Name, house.Address, house.NumberOfRooms, house.Rate))), ct);
+    private async IAsyncEnumerable<object> GetDataStream([EnumeratorCancellation] CancellationToken ct)
+    {
+        var houses = _session.Query<House>().ToAsyncEnumerable(ct);
+
+        await foreach (var house in houses)
+        {
+            yield return new GetAllHousesResponseHouse(house.Id, house.Name, house.Address, house.NumberOfRooms, house.Rate);
+        }
     }
 }
