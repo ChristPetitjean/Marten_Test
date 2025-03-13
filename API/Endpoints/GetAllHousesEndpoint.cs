@@ -5,7 +5,7 @@ using Marten;
 
 namespace API.Endpoints;
 
-public record GetAllHousesResponseHouse(Guid Id, string Name, string Address, int NumberOfRooms, decimal? Stars);
+public record GetAllHousesResponse(Guid Id, string Name, string Address, int NumberOfRooms, decimal? Stars);
 
 public class GetAllHousesEndpoint(IDocumentSession session) : EndpointWithoutRequest
 {
@@ -17,7 +17,7 @@ public class GetAllHousesEndpoint(IDocumentSession session) : EndpointWithoutReq
         AllowAnonymous();
 
         Description(b => b
-        .Produces<IEnumerable<GetAllHousesResponseHouse>>());
+        .Produces<IEnumerable<GetAllHousesResponse>>());
     }
 
     public override async Task HandleAsync(CancellationToken ct)
@@ -31,7 +31,7 @@ public class GetAllHousesEndpoint(IDocumentSession session) : EndpointWithoutReq
 
         await foreach (var house in houses)
         {
-            yield return new GetAllHousesResponseHouse(house.Id, house.Name, house.Address, house.NumberOfRooms, house.Rate);
+            yield return new GetAllHousesResponse(house.Id, house.Name, house.Address, house.NumberOfRooms, house.Rate);
         }
     }
 }

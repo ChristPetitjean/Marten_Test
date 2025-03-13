@@ -7,15 +7,20 @@ using Marten.Events.Projections;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddServiceDefaults(); // For Aspire to works
-builder.AddNpgsqlDataSource(connectionName: "houses-db"); //postgres must match ASPIRE Host database name (usually same as username)
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+//Aspire services
+builder.AddServiceDefaults();
+
+//connectionName must match ASPIRE Host database name (usually same as username)
+builder.AddNpgsqlDataSource(connectionName: "houses-db"); 
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddMarten(options =>
                            {
+                               // Disable the absurdly verbose Npgsql logging
+                               options.DisableNpgsqlLogging = true;
+                               
                                // Specify that we want to use STJ as our serializer
                                options.UseSystemTextJsonForSerialization();
 
@@ -31,7 +36,7 @@ builder.Services.AddMarten(options =>
                                    options.AutoCreateSchemaObjects = AutoCreate.All;
                                }
                            })
-       .UseNpgsqlDataSource()
+       .UseNpgsqlDataSource() // For mapping to previously created postgres service
        .UseLightweightSessions();
 
 builder.Services
@@ -39,6 +44,9 @@ builder.Services
        .SwaggerDocument();
 
 var app = builder.Build();
+
+//Aspire endpoints
+app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
